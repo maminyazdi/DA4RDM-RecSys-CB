@@ -2,8 +2,10 @@ import numpy as np
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from scipy import interp
 from src.plotting import plot_roc_auc
-def compute_ROC(ground_truth_matrix,similarity_matrix,cnf_matrix ):
-    '''
+
+
+def compute_ROC(ground_truth_matrix, similarity_matrix, cnf_matrix ):
+    """
     FP = cnf_matrix.sum(axis=0) - np.diag(cnf_matrix)
     FN = cnf_matrix.sum(axis=1) - np.diag(cnf_matrix)
     TP = np.diag(cnf_matrix)
@@ -32,7 +34,7 @@ def compute_ROC(ground_truth_matrix,similarity_matrix,cnf_matrix ):
 
     print(TPR,TNR,PPV,NPV,FPR,FNR,FDR,ACC)
     print(roc_auc_score_multiclass(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
-    '''
+    """
 
     cm = cnf_matrix
     n_classes = cm.shape[0]
@@ -56,12 +58,7 @@ def compute_ROC(ground_truth_matrix,similarity_matrix,cnf_matrix ):
     fpr["macro"] = all_fpr
     tpr["macro"] = mean_tpr
     roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
-
-    plot_roc_auc(fpr,tpr,roc_auc,n_classes)
-
-
-
-
+    plot_roc_auc(fpr, tpr, roc_auc, n_classes)
 
 
 def roc_auc_score_multiclass(actual_class, pred_class, average="macro"):
