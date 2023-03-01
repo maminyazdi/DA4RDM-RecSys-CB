@@ -13,7 +13,7 @@ from src.plotting import plot_heatmap
 
 
 def evaluate(df):
-    data = pd.read_csv("Data/tomography.csv", sep='|')
+    data = pd.read_csv("C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/tomography.csv", sep='|')
     resource_list = data["Resource"].unique().tolist()
 
     resource_data_dict = {}
