@@ -2,15 +2,18 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support, mean_squared_error, roc_curve, ndcg_score, classification_report ,auc , roc_auc_score
 from scipy.stats import spearmanr
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-# from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from src.distance_similarity_calculator import result_function
 # from warnings import filterwarnings
 from src.roc import compute_ROC
+from src.plotting import plot_precision_recall
+from src.plotting import plot_scatter_matrix
+from src.plotting import plot_ndcg
+from src.plotting import plot_box_plot
+from src.plotting import plot_heatmap
+
 
 def evaluate(df):
-    data = pd.read_csv("../Data/tomography.csv", sep='|')
+    data = pd.read_csv("Data/tomography.csv", sep='|')
     resource_list = data["Resource"].unique().tolist()
 
     resource_data_dict = {}
@@ -35,33 +38,38 @@ def evaluate(df):
         for index, rows in data.iterrows():
             eval_matrix.loc[-1, [index]] = rows["distance"]
         eval_matrix.index = eval_matrix.index + 1
-
     eval_matrix.set_index('Resource', inplace=True)
-    
 
-
-    #Converting resource names into an array of int
+    # Converting resource names into an array of int
     ground_truth_matrix = eval_matrix.to_numpy(dtype=int)
     similarity_matrix = eval_matrix.to_numpy(dtype=int)
 
+    plot_scatter_matrix(ground_truth_matrix, similarity_matrix )
     # TODO: Export the ground_truth_matrix as CSV (maybe before converting to array)
 
     confusion = confusion_matrix(ground_truth_matrix.flatten(), similarity_matrix.flatten())
+
     # Compute ROC
-    compute_ROC(ground_truth_matrix, similarity_matrix,confusion)
+    compute_ROC(ground_truth_matrix, similarity_matrix, confusion)
 
     # Compute precision, recall, and F1 score
     precision, recall, f1_score, _ = precision_recall_fscore_support(ground_truth_matrix.flatten(),
                                                                      similarity_matrix.flatten(), average='macro')
+    plot_precision_recall(ground_truth_matrix, similarity_matrix)
 
     # Compute mean squared error
     mse = mean_squared_error(ground_truth_matrix.flatten(), similarity_matrix.flatten())
 
     # Compute NDCG score
     ndcg = ndcg_score(ground_truth_matrix, similarity_matrix)
-    
+    plot_ndcg(ndcg)
+
     # Compute Spearman's Rank Correlation Coefficient
     spearman_corr, _ = spearmanr(ground_truth_matrix.flatten(), similarity_matrix.flatten())
+
+    eval_matrix = eval_matrix.astype(int)
+    plot_box_plot(eval_matrix)
+    plot_heatmap(eval_matrix)
     
     print("Confusion matrix:\n", confusion)
     print("classification_report: ", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
