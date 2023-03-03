@@ -4,8 +4,30 @@ import seaborn as sns
 from inspect import signature
 from sklearn.metrics import precision_recall_curve, average_precision_score
 import random
-import numpy
+import numpy as np
 
+#def generate_plots():
+
+def plot_silhouette_score(silhouette_vals ,silhouette_avg,resource_resource_matrix ):
+    # plot silhouette scores for each sample in the confusion matrix
+    y_lower, y_upper = 0, 0
+    fig, ax = plt.subplots(figsize=(8, 6))
+    for i, cluster in enumerate(np.unique(np.argmax(resource_resource_matrix, axis=1))):
+        cluster_silhouette_vals = silhouette_vals[np.argmax(resource_resource_matrix, axis=1) == cluster]
+        cluster_silhouette_vals.sort()
+        y_upper += len(cluster_silhouette_vals)
+        ax.barh(range(y_lower, y_upper), cluster_silhouette_vals, height=1)
+        ax.text(-0.03, (y_lower + y_upper) / 2, str(i + 1))
+        y_lower += len(cluster_silhouette_vals)
+
+    # plot average silhouette score
+    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+    ax.set_yticks([])
+    ax.set_xlim([-0.1, 1])
+    ax.set_xlabel("Silhouette coefficient values")
+    ax.set_ylabel("Cluster labels")
+    ax.set_title("Silhouette plot for the confusion matrix")
+    plt.show()
 
 def plot_roc_auc(fpr,tpr,roc_auc,n_classes):
     # TODO: get the output as PDF
@@ -45,7 +67,7 @@ def plot_precision_recall(ground_truth_matrix, similarity_matrix):
             temp = random.randint(0, 1)
             row.append(temp)
         ground_truth_matrix.append(row)
-    ground_truth_matrix = numpy.asarray(ground_truth_matrix, dtype=int)
+    ground_truth_matrix = np.asarray(ground_truth_matrix, dtype=int)
     precision, recall, _ = precision_recall_curve(ground_truth_matrix.flatten(), similarity_matrix.flatten())
     average_precision = average_precision_score(ground_truth_matrix.flatten(), similarity_matrix.flatten())
     plt.figure()
@@ -77,7 +99,7 @@ def plot_scatter_matrix(ground_truth_matrix, similarity_matrix ):
 
 def plot_ndcg(ndcg):
     plt.figure()
-    k_values = [1]
+    k_values = [3]
     plt.plot(k_values, ndcg)
     plt.xlabel('Number of recommended items (k)')
     plt.ylabel('NDCG score')
@@ -90,13 +112,19 @@ def plot_box_plot(matrix):
     # assume similarities is a pandas DataFrame containing similarity scores for each item
     plt.figure()
     boxplot = matrix.boxplot()
-    plt.savefig('Boxplot.pdf', rot=45, format="pdf")
+    plt.savefig('Boxplot.pdf', format="pdf")
     plt.show()
 
 
 def plot_heatmap(matrix):
     plt.figure()
-    sns.heatmap(matrix, annot=True)
+    sns.set(font_scale=0.65)
+
+    # mask create a diagonally splitted heatmap
+    mask = np.zeros_like(matrix)
+    mask[np.triu_indices_from(mask)] = True
+
+    sns.heatmap(matrix, cmap="autumn",mask=mask, linewidth=0.05,  annot=True, annot_kws={"fontsize":8})
     plt.savefig('Heatmap.pdf', format="pdf")
     plt.show()
 
