@@ -11,8 +11,8 @@ from src.plotting import plot_ndcg , plot_box_plot, plot_heatmap, plot_silhouett
 
 def evaluate(df):
     # DO NOT DELETE THE BELLOW LINE OF CODE
-    # eval_matrix, ground_truth_matrix, similarity_matrix = create_resources_similarity_matrix(df)
-    ground_truth_matrix, similarity_matrix = read_local_resource_similarit_matrix()
+    eval_matrix, ground_truth_matrix, similarity_matrix = create_resources_similarity_matrix(df)
+    # ground_truth_matrix, similarity_matrix = read_local_resource_similarit_matrix()
 
     confusion = confusion_matrix(ground_truth_matrix.flatten(), similarity_matrix.flatten())
 
@@ -49,7 +49,7 @@ def evaluate(df):
     plot_heatmap(eval_matrix)
 
     # print("Confusion matrix:\n", confusion)
-    print("classification_report: ", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
+    print("classification_report: \n", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
     #print("Precision: {:.4f}, Recall: {:.4f}, F1 score: {:.4f}".format(precision, recall, f1_score))
     print("Mean Squared Error (MSE): {:.4f}".format(mse))
     print("Root Mean Squared Error (RMSE): {:.4f}".format(rmse))
@@ -78,7 +78,7 @@ def read_local_resource_similarit_matrix():
 
 
     # ground_truth_matrix = np.maximum(ground_truth_matrix, ground_truth_matrix.transpose())
-    similarity_matrix = np.maximum(similarity_matrix, similarity_matrix.transpose())
+    #similarity_matrix = np.maximum(similarity_matrix, similarity_matrix.transpose())
 
     return ground_truth_matrix, similarity_matrix
 
@@ -91,7 +91,7 @@ def create_resources_similarity_matrix(df):
 
     resource_data_dict = {}
     for resource in resource_list:
-        matrix = result_function(df, resource, distanceMethod='cosine', outputFormatJson=False, DEBUG_MODE=False)
+        matrix = result_function(df, resource, distanceMethod='euclidean', outputFormatJson=False, DEBUG_MODE=False)
         conditions = [
             (matrix['distance'] < 0.2),
             (matrix['distance'] >= 0.2) & (matrix['distance'] < 0.4),
@@ -112,12 +112,12 @@ def create_resources_similarity_matrix(df):
             eval_matrix.loc[-1, [index]] = rows["distance"]
         eval_matrix.index = eval_matrix.index + 1
     eval_matrix.set_index('Resource', inplace=True)
-    eval_matrix.to_csv("C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/eval_matrix_cosine.csv")
+    eval_matrix.to_csv("C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/eval_matrix_euclidean.csv")
     # Converting resource names into an array of int
     ground_truth_matrix = eval_matrix.to_numpy(dtype=int)
     similarity_matrix = eval_matrix.to_numpy(dtype=int)
     pd.DataFrame(similarity_matrix).to_csv(
-        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/similarity_matrix_cosine.csv")
+        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/similarity_matrix_euclidean.csv")
 
     return eval_matrix, ground_truth_matrix, similarity_matrix
 

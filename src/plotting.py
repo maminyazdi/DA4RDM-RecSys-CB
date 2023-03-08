@@ -10,6 +10,12 @@ import numpy as np
 
 def plot_silhouette_score(silhouette_vals ,silhouette_avg,resource_resource_matrix ):
     # plot silhouette scores for each sample in the confusion matrix
+    #silhouette_vals= [0.31892271, 0.13566212, 1., 0.37678954,
+    #                  0., 0., 0., - 0.29554268,
+    #                  1., 0.32861616, 0., 0., 0.1567142,
+    #                  1., 0.31271581, 0.,1 , 0.,
+    #                  0.32861616, 0., 1., 1., 0., 1.]
+
     y_lower, y_upper = 0, 0
     fig, ax = plt.subplots(figsize=(8, 6))
     for i, cluster in enumerate(np.unique(np.argmax(resource_resource_matrix, axis=1))):
@@ -27,6 +33,7 @@ def plot_silhouette_score(silhouette_vals ,silhouette_avg,resource_resource_matr
     ax.set_xlabel("Silhouette coefficient values")
     ax.set_ylabel("Cluster labels")
     ax.set_title("Silhouette plot for the confusion matrix")
+    plt.savefig("silhouette_score.pdf", format="pdf")
     plt.show()
 
 def plot_roc_auc(fpr,tpr,roc_auc,n_classes):

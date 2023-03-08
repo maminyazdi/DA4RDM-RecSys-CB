@@ -110,7 +110,7 @@ def fillNan(filepath: str, seperator='|', DEBUG_MODE=False):
     if (df['Resource'].isnull().values.any()):
         raise ValueError('There is a resource without ID')
 
-    drop_threshold = 0.7
+    drop_threshold = 0.5
     len_dataset = len(df.index)
     for column in df:
         nan_count = df[column].isna().sum()
@@ -118,14 +118,21 @@ def fillNan(filepath: str, seperator='|', DEBUG_MODE=False):
         if nan_count_avg > drop_threshold:
             df = df.drop(columns=[column])
 
-    objectImputer = SimpleImputer(strategy='most_frequent')
-    text_columns = df.select_dtypes(include=object).iloc[:, :].columns
-    df[text_columns] = pd.DataFrame(objectImputer.fit_transform(df[text_columns]), columns=text_columns)
+    # Impute for data type numeric
+    #numeric_columns = df.select_dtypes(include=np.number).iloc[:, :].columns
+    numeric_columns = df.select_dtypes(include=np.number).columns.tolist()
+    if numeric_columns:
+        numerical_imputer = KNNImputer(n_neighbors=3)
+        df[numeric_columns] = pd.DataFrame(numerical_imputer.fit_transform(df[numeric_columns]), columns=numeric_columns)
 
 
-    numeric_columns = df.select_dtypes(include=np.number).iloc[:, :].columns
-    numerical_imputer = KNNImputer(n_neighbors=3)
-    df[numeric_columns] = pd.DataFrame(numerical_imputer.fit_transform(df[numeric_columns]), columns=numeric_columns)
+    # Impute for data type Object
+    object_cols = df.select_dtypes(include='object').columns.tolist()
+    if object_cols:
+        #imputer = SimpleImputer(strategy='most_frequent')
+        #df[object_cols] = imputer.fit_transform(df[object_cols])
+        df[object_cols] = df[object_cols].fillna('None')
+
 
 
 
