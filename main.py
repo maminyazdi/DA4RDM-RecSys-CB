@@ -11,3 +11,5 @@ df.drop(columns=["Unnamed: 0"], inplace=True)
 evaluate(df)
 print("########### DONE ###########")
 # TODO: Move plot files to be stored in their own folder
+# TODO: Add bar plot to view missing values (Data Sparsity) Refer to Markus thesis Figure 6.2a for the selected Features above
+# TODO: Add bar plot to demonstrated number of files per resources
