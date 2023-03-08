@@ -54,7 +54,6 @@ def evaluate(df):
     print("Mean Squared Error (MSE): {:.4f}".format(mse))
     print("Root Mean Squared Error (RMSE): {:.4f}".format(rmse))
     print("Mean Average Error (MAE): {:.4f}".format(mae))
-    print("Mean squared error: {:.4f}".format(mse))
     print("NDCG score: {:.4f}".format(ndcg))
     print("Spearman's Rank Correlation Coefficient: {:.4f}".format(spearman_corr))
     print("silhouette_vals score:\n", silhouette_vals)
