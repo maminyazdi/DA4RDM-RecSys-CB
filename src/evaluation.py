@@ -66,15 +66,17 @@ def read_local_resource_similarit_matrix():
     #    "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/eval_matrix_cosine.csv")
 
     similarity_matrix = pd.read_csv(
-        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/similarity_matrix_euclidean.csv")
+        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/similarity_matrix_cosine.csv")
     similarity_matrix.drop(columns=["Unnamed: 0"], inplace=True)
     similarity_matrix = similarity_matrix.to_numpy(dtype=int)
+    #similarity_matrix = make_symmetric(similarity_matrix)
+
 
     ground_truth_matrix = pd.read_csv(
-        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/User studies/ground_truth_matrix-1.csv")
+        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/User studies/ground_truth_matrix.csv")
     ground_truth_matrix.drop(columns=["Unnamed: 0"], inplace=True)
     ground_truth_matrix = ground_truth_matrix.to_numpy(dtype=int)
-
+    #ground_truth_matrix = make_symmetric(ground_truth_matrix)
 
     # ground_truth_matrix = np.maximum(ground_truth_matrix, ground_truth_matrix.transpose())
     #similarity_matrix = np.maximum(similarity_matrix, similarity_matrix.transpose())
@@ -82,6 +84,24 @@ def read_local_resource_similarit_matrix():
     return ground_truth_matrix, similarity_matrix
 
 
+
+def make_symmetric(asym_matrix):
+    # Get the dimensions of the asymmetric matrix
+    nrows, ncols = asym_matrix.shape
+
+    # Create an empty symmetric matrix
+    sym_matrix = np.zeros((nrows, ncols), dtype=int)
+
+    # Copy the lower triangle to the upper triangle
+    for i in range(nrows):
+        for j in range(i):
+            sym_matrix[i][j] = asym_matrix[j][i]
+            sym_matrix[j][i] = asym_matrix[j][i]
+
+        # Copy the diagonal element
+        sym_matrix[i][i] = asym_matrix[i][i]
+
+    return sym_matrix
 
 
 def create_resources_similarity_matrix(df):
@@ -111,12 +131,20 @@ def create_resources_similarity_matrix(df):
             eval_matrix.loc[-1, [index]] = rows["distance"]
         eval_matrix.index = eval_matrix.index + 1
     eval_matrix.set_index('Resource', inplace=True)
-    eval_matrix.to_csv("C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/eval_matrix_euclidean.csv")
+    eval_matrix.to_csv(
+        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/eval_matrix_euclidean.csv")
     # Converting resource names into an array of int
     ground_truth_matrix = eval_matrix.to_numpy(dtype=int)
+    ground_truth_matrix = make_symmetric(ground_truth_matrix)
+
+
     similarity_matrix = eval_matrix.to_numpy(dtype=int)
+    similarity_matrix = make_symmetric(similarity_matrix)
     pd.DataFrame(similarity_matrix).to_csv(
         "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/similarity_matrix_euclidean.csv")
+
+
+
 
     return eval_matrix, ground_truth_matrix, similarity_matrix
 
