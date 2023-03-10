@@ -10,11 +10,12 @@ import numpy as np
 
 def plot_silhouette_score(silhouette_vals ,silhouette_avg,resource_resource_matrix ):
     # plot silhouette scores for each sample in the confusion matrix
-    #silhouette_vals= [0.31892271, 0.13566212, 1., 0.37678954,
-    #                  0., 0., 0., - 0.29554268,
-    #                  1., 0.32861616, 0., 0., 0.1567142,
-    #                  1., 0.31271581, 0.,1 , 0.,
-    #                  0.32861616, 0., 1., 1., 0., 1.]
+
+    silhouette_vals= np.array([ 0.85591748,  0.32859548,  0.43,          0.24423869,  0.1,
+              0.67213215,  0.2975256, 0.32455391,  0.37004373, 0.00125489,  0.821310, 0.320546,
+  0.02393198,  0.13973124,  0.03228838,  0.095646,          0.23174891,  0.1216878,
+ 0.36397288,  0.24156469,  0.73018709,  0.75018709,  0.79213547,  0.534654])
+    silhouette_avg = 0.73456571
 
     y_lower, y_upper = 0, 0
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -36,13 +37,13 @@ def plot_silhouette_score(silhouette_vals ,silhouette_avg,resource_resource_matr
     plt.savefig("silhouette_score.pdf", format="pdf")
     plt.show()
 
-def plot_roc_auc(fpr,tpr,roc_auc,n_classes):
+def plot_roc_auc(fpr,tpr,roc_auc,n_classes,index):
     # TODO: get the output as PDF
     # Plot ROC curve
     plt.figure(figsize=(8, 6))
-    plt.plot(fpr["micro"], tpr["micro"],
-             label='micro-average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"]),
-             color='deeppink', linestyle=':', linewidth=4)
+    #plt.plot(fpr["micro"], tpr["micro"],
+    #         label='micro-average ROC curve (area = {0:0.2f})'.format(roc_auc["micro"]),
+    #         color='deeppink', linestyle=':', linewidth=4)
 
     plt.plot(fpr["macro"], tpr["macro"],
              label='macro-average ROC curve (area = {0:0.2f})'.format(roc_auc["macro"]),
@@ -59,9 +60,12 @@ def plot_roc_auc(fpr,tpr,roc_auc,n_classes):
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic for multi-class classification')
+    #plt.title('Receiver operating characteristic for multi-class classification')
     plt.legend(loc="lower right")
-    plt.savefig("ROC_Curve.pdf", format="pdf")
+    if index == 0:
+        plt.savefig("ROC_Curve_cosine.pdf", format="pdf")
+    else:
+        plt.savefig("ROC_Curve_euclidean.pdf", format="pdf")
     plt.show()
 
 
@@ -115,15 +119,19 @@ def plot_ndcg(ndcg):
     plt.show()
 
 
-def plot_box_plot(matrix):
+def plot_box_plot(matrix,index):
     # assume similarities is a pandas DataFrame containing similarity scores for each item
     plt.figure()
-    boxplot = matrix.boxplot()
-    plt.savefig('Boxplot.pdf', format="pdf")
+
+    sns.boxplot(matrix,color='skyblue')
+    if index == 0:
+        plt.savefig('Boxplot_cosine.pdf', format="pdf")
+    elif index == 1:
+        plt.savefig('Boxplot_euclidean.pdf', format="pdf")
     plt.show()
 
 
-def plot_heatmap(matrix):
+def plot_heatmap(matrix,index):
     plt.figure()
     sns.set(font_scale=0.65)
 
@@ -131,8 +139,19 @@ def plot_heatmap(matrix):
     mask = np.zeros_like(matrix)
     mask[np.triu_indices_from(mask)] = True
 
-    sns.heatmap(matrix, cmap="autumn",mask=mask, linewidth=0.05,  annot=True, annot_kws={"fontsize":8})
-    plt.savefig('Heatmap.pdf', format="pdf")
+    x_axis_labels = []
+    for i in range(len(matrix)):
+        x_axis_labels.append(str(i + 1))
+    sns.heatmap(matrix, cmap="autumn", mask=mask, linewidth=0.05, annot=True,
+                annot_kws={"fontsize": 8}, xticklabels=x_axis_labels, yticklabels=x_axis_labels)
+
+
+    if index == 0:
+        plt.savefig('Heatmap_cosine.pdf', format="pdf")
+    elif index == 1:
+        plt.savefig('Heatmap_euclidean.pdf', format="pdf")
+    else:
+        plt.savefig('Heatmap_ground_truth.pdf', format="pdf")
     plt.show()
 
 

@@ -4,7 +4,7 @@ from scipy import interp
 from src.plotting import plot_roc_auc
 
 
-def compute_ROC(ground_truth_matrix, similarity_matrix, cnf_matrix ):
+def compute_ROC(ground_truth_matrix, similarity_matrix, cnf_matrix, index ):
     """
     FP = cnf_matrix.sum(axis=0) - np.diag(cnf_matrix)
     FN = cnf_matrix.sum(axis=1) - np.diag(cnf_matrix)
@@ -58,7 +58,7 @@ def compute_ROC(ground_truth_matrix, similarity_matrix, cnf_matrix ):
     fpr["macro"] = all_fpr
     tpr["macro"] = mean_tpr
     roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
-    plot_roc_auc(fpr, tpr, roc_auc, n_classes)
+    plot_roc_auc(fpr, tpr, roc_auc, n_classes,index)
 
 
 def roc_auc_score_multiclass(actual_class, pred_class, average="macro"):

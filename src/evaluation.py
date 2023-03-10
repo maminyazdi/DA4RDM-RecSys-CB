@@ -24,15 +24,12 @@ def evaluate(df):
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>> Euclidean <<<<<<<<<<<<<<<<<<<<<<<<")
         confusion = confusion_matrix(ground_truth_matrix.flatten(), similarity_matrix.flatten())
 
-        # calculate silhouette scores for each sample in the confusion matrix
-        silhouette_vals = silhouette_samples(similarity_matrix, np.argmax(similarity_matrix, axis=1))
-        # calculate mean silhouette score for the entire dataset
-        silhouette_avg = silhouette_score(similarity_matrix, np.argmax(similarity_matrix, axis=1))
-
-        plot_silhouette_score(silhouette_vals,silhouette_avg,similarity_matrix)
+        eval_matrix = pd.DataFrame(similarity_matrix)
+        plot_heatmap(eval_matrix,i)
+        plot_box_plot(eval_matrix,i)
 
         # Compute ROC
-        compute_ROC(ground_truth_matrix, similarity_matrix, confusion)
+        compute_ROC(ground_truth_matrix, similarity_matrix, confusion,i)
         # Compute precision, recall, and F1 score
         precision, recall, f1_score, _ = precision_recall_fscore_support(ground_truth_matrix.flatten(),
                                                                          similarity_matrix.flatten(), average='macro')
@@ -43,7 +40,7 @@ def evaluate(df):
         mae = mean_absolute_error(ground_truth_matrix.flatten(),similarity_matrix.flatten())
         # Compute NDCG score
         ndcg = ndcg_score(ground_truth_matrix, similarity_matrix)
-        plot_ndcg(ndcg)
+        # plot_ndcg(ndcg)
 
         # Compute Spearman's Rank Correlation Coefficient
         spearman_corr, _ = spearmanr(ground_truth_matrix.flatten(), similarity_matrix.flatten())
@@ -51,10 +48,7 @@ def evaluate(df):
         # plot_precision_recall(ground_truth_matrix, similarity_matrix)
 
 
-        eval_matrix = pd.DataFrame(similarity_matrix)
-        #eval_matrix = eval_matrix.astype(int)
-        plot_box_plot(eval_matrix)
-        plot_heatmap(eval_matrix)
+
 
         # print("Confusion matrix:\n", confusion)
         print("classification_report: \n", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
@@ -64,9 +58,16 @@ def evaluate(df):
         print("Mean Average Error (MAE): {:.4f}".format(mae))
         print("NDCG score: {:.4f}".format(ndcg))
         print("Spearman's Rank Correlation Coefficient: {:.4f}".format(spearman_corr))
-        print("silhouette_vals score:\n", silhouette_vals)
-        print("silhouette_avg score: ",silhouette_avg)
 
+    plot_heatmap(ground_truth_matrix,3)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> Silhouette Evaluation <<<<<<<<<<<<<<<<<<<<<<<<")
+    # calculate silhouette scores for each sample in the confusion matrix
+    silhouette_vals = silhouette_samples(ground_truth_matrix, np.argmax(ground_truth_matrix, axis=1))
+    # calculate mean silhouette score for the entire dataset
+    silhouette_avg = silhouette_score(similarity_matrix, np.argmax(similarity_matrix, axis=1))
+    plot_silhouette_score(silhouette_vals, silhouette_avg, ground_truth_matrix)
+    print("silhouette_vals score:\n", silhouette_vals)
+    print("silhouette_avg score: ", silhouette_avg)
 
 def get_matrixes(index):
     if index == 0:
