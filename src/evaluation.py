@@ -11,75 +11,81 @@ from src.plotting import plot_ndcg , plot_box_plot, plot_heatmap, plot_silhouett
 
 def evaluate(df):
     # DO NOT DELETE THE BELLOW LINE OF CODE
-    eval_matrix, ground_truth_matrix, similarity_matrix = create_resources_similarity_matrix(df)
-    # ground_truth_matrix, similarity_matrix = read_local_resource_similarit_matrix()
-
-    confusion = confusion_matrix(ground_truth_matrix.flatten(), similarity_matrix.flatten())
-
-    # calculate silhouette scores for each sample in the confusion matrix
-    silhouette_vals = silhouette_samples(similarity_matrix, np.argmax(similarity_matrix, axis=1))
-    # calculate mean silhouette score for the entire dataset
-    silhouette_avg = silhouette_score(similarity_matrix, np.argmax(similarity_matrix, axis=1))
-
-    plot_silhouette_score(silhouette_vals,silhouette_avg,similarity_matrix)
-
-    # Compute ROC
-    compute_ROC(ground_truth_matrix, similarity_matrix, confusion)
-    # Compute precision, recall, and F1 score
-    precision, recall, f1_score, _ = precision_recall_fscore_support(ground_truth_matrix.flatten(),
-                                                                     similarity_matrix.flatten(), average='macro')
-    # Compute mean squared error (MSE)
-    mse = mean_squared_error(ground_truth_matrix.flatten(), similarity_matrix.flatten())
-    rmse = mean_squared_error(ground_truth_matrix.flatten(), similarity_matrix.flatten(), squared=False)
-    # compute mean absolute error (MAE)
-    mae = mean_absolute_error(ground_truth_matrix.flatten(),similarity_matrix.flatten())
-    # Compute NDCG score
-    ndcg = ndcg_score(ground_truth_matrix, similarity_matrix)
-    plot_ndcg(ndcg)
-
-    # Compute Spearman's Rank Correlation Coefficient
-    spearman_corr, _ = spearmanr(ground_truth_matrix.flatten(), similarity_matrix.flatten())
-    # plot_scatter_matrix(ground_truth_matrix, similarity_matrix)
-    # plot_precision_recall(ground_truth_matrix, similarity_matrix)
+    # eval_matrix, ground_truth_matrix, similarity_matrix = create_resources_similarity_matrix(df)
 
 
-    eval_matrix = pd.DataFrame(similarity_matrix)
-    #eval_matrix = eval_matrix.astype(int)
-    plot_box_plot(eval_matrix)
-    plot_heatmap(eval_matrix)
+    for i in range(2):
 
-    # print("Confusion matrix:\n", confusion)
-    print("classification_report: \n", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
-    #print("Precision: {:.4f}, Recall: {:.4f}, F1 score: {:.4f}".format(precision, recall, f1_score))
-    print("Mean Squared Error (MSE): {:.4f}".format(mse))
-    print("Root Mean Squared Error (RMSE): {:.4f}".format(rmse))
-    print("Mean Average Error (MAE): {:.4f}".format(mae))
-    print("NDCG score: {:.4f}".format(ndcg))
-    print("Spearman's Rank Correlation Coefficient: {:.4f}".format(spearman_corr))
-    print("silhouette_vals score:\n", silhouette_vals)
-    print("silhouette_avg score: ",silhouette_avg)
+        ground_truth_matrix, similarity_matrix = get_matrixes(i)
+
+        if i == 0:
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>> Cosine <<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        else:
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>> Euclidean <<<<<<<<<<<<<<<<<<<<<<<<")
+        confusion = confusion_matrix(ground_truth_matrix.flatten(), similarity_matrix.flatten())
+
+        # calculate silhouette scores for each sample in the confusion matrix
+        silhouette_vals = silhouette_samples(similarity_matrix, np.argmax(similarity_matrix, axis=1))
+        # calculate mean silhouette score for the entire dataset
+        silhouette_avg = silhouette_score(similarity_matrix, np.argmax(similarity_matrix, axis=1))
+
+        plot_silhouette_score(silhouette_vals,silhouette_avg,similarity_matrix)
+
+        # Compute ROC
+        compute_ROC(ground_truth_matrix, similarity_matrix, confusion)
+        # Compute precision, recall, and F1 score
+        precision, recall, f1_score, _ = precision_recall_fscore_support(ground_truth_matrix.flatten(),
+                                                                         similarity_matrix.flatten(), average='macro')
+        # Compute mean squared error (MSE)
+        mse = mean_squared_error(ground_truth_matrix.flatten(), similarity_matrix.flatten())
+        rmse = mean_squared_error(ground_truth_matrix.flatten(), similarity_matrix.flatten(), squared=False)
+        # compute mean absolute error (MAE)
+        mae = mean_absolute_error(ground_truth_matrix.flatten(),similarity_matrix.flatten())
+        # Compute NDCG score
+        ndcg = ndcg_score(ground_truth_matrix, similarity_matrix)
+        plot_ndcg(ndcg)
+
+        # Compute Spearman's Rank Correlation Coefficient
+        spearman_corr, _ = spearmanr(ground_truth_matrix.flatten(), similarity_matrix.flatten())
+        # plot_scatter_matrix(ground_truth_matrix, similarity_matrix)
+        # plot_precision_recall(ground_truth_matrix, similarity_matrix)
 
 
+        eval_matrix = pd.DataFrame(similarity_matrix)
+        #eval_matrix = eval_matrix.astype(int)
+        plot_box_plot(eval_matrix)
+        plot_heatmap(eval_matrix)
 
-def read_local_resource_similarit_matrix():
-    #eval_matrix = pd.read_csv(
-    #    "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/eval_matrix_cosine.csv")
+        # print("Confusion matrix:\n", confusion)
+        print("classification_report: \n", classification_report(ground_truth_matrix.flatten(), similarity_matrix.flatten()))
+        #print("Precision: {:.4f}, Recall: {:.4f}, F1 score: {:.4f}".format(precision, recall, f1_score))
+        print("Mean Squared Error (MSE): {:.4f}".format(mse))
+        print("Root Mean Squared Error (RMSE): {:.4f}".format(rmse))
+        print("Mean Average Error (MAE): {:.4f}".format(mae))
+        print("NDCG score: {:.4f}".format(ndcg))
+        print("Spearman's Rank Correlation Coefficient: {:.4f}".format(spearman_corr))
+        print("silhouette_vals score:\n", silhouette_vals)
+        print("silhouette_avg score: ",silhouette_avg)
 
-    similarity_matrix = pd.read_csv(
-        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/similarity_matrix_cosine.csv")
-    similarity_matrix.drop(columns=["Unnamed: 0"], inplace=True)
-    similarity_matrix = similarity_matrix.to_numpy(dtype=int)
-    #similarity_matrix = make_symmetric(similarity_matrix)
 
+def get_matrixes(index):
+    if index == 0:
+        #cosine
+        similarity_matrix = pd.read_csv(
+            "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/similarity_matrix_cosine.csv")
+        similarity_matrix.drop(columns=["Unnamed: 0"], inplace=True)
+        similarity_matrix = similarity_matrix.to_numpy(dtype=int)
+    else:
+        #Euclidean
+        similarity_matrix = pd.read_csv(
+            "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Euclidean/similarity_matrix_euclidean.csv")
+        similarity_matrix.drop(columns=["Unnamed: 0"], inplace=True)
+        similarity_matrix = similarity_matrix.to_numpy(dtype=int)
 
     ground_truth_matrix = pd.read_csv(
-        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/Cosine/User studies/ground_truth_matrix.csv")
+        "C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/Data/Evaluation/ground_truth/ground_truth_matrix.csv")
     ground_truth_matrix.drop(columns=["Unnamed: 0"], inplace=True)
     ground_truth_matrix = ground_truth_matrix.to_numpy(dtype=int)
-    #ground_truth_matrix = make_symmetric(ground_truth_matrix)
-
-    # ground_truth_matrix = np.maximum(ground_truth_matrix, ground_truth_matrix.transpose())
-    #similarity_matrix = np.maximum(similarity_matrix, similarity_matrix.transpose())
 
     return ground_truth_matrix, similarity_matrix
 
