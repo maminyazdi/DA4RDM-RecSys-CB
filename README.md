@@ -1,4 +1,3 @@
-# DA4RDM-RecSys-CB
 # Research Data Reusability with Content-Based Recommender System
 
 ## Abstract
