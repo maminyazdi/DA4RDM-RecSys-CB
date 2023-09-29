@@ -9,7 +9,3 @@ import pandas as pd
 df = pd.read_csv("C:/Users/ay-admin/PycharmProjects/da4rdm-recsys-cb/src/tomography_dataframe_new_few_selectedFeatures.csv")
 df.drop(columns=["Unnamed: 0"], inplace=True)
 evaluate(df)
-print("########### DONE ###########")
-# TODO: Move plot files to be stored in their own folder
-# TODO: Add bar plot to view missing values (Data Sparsity) Refer to Markus thesis Figure 6.2a for the selected Features above
-# TODO: Add bar plot to demonstrated number of files per resources
